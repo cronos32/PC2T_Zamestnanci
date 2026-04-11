@@ -15,9 +15,18 @@ public class Main {
             System.out.println("4 - Výpis");
             System.out.println("5 - Statistiky");
             System.out.println("6 - Výpočty");
+            System.out.println("7 - Najít zaměstnance podle ID");
+            System.out.println("8 - Vypsat spolupráce");
             System.out.println("0 - Konec");
 
-            int volba = sc.nextInt();
+            int volba;
+
+            try {
+                volba = Integer.parseInt(sc.nextLine());
+            } catch (Exception e) {
+                System.out.println("Zadej číslo!");
+                continue;
+            }
 
             switch (volba) {
                 case 1 -> {
@@ -32,7 +41,7 @@ public class Main {
                 	    typ = "security";
                 	} else {
                 	    System.out.println("Neplatný typ!");
-                	    continue; // vrátí se do menu
+                	    continue; 
                 	}
                     System.out.println("Jméno:");
                     String jmeno = sc.next();
@@ -40,6 +49,8 @@ public class Main {
                     String prijmeni = sc.next();
                     System.out.println("Rok narození:");
                     int rok = sc.nextInt();
+                    
+                    sc.nextLine();
 
                     db.pridatZamestnance(typ, jmeno, prijmeni, rok);
                 }
@@ -47,12 +58,29 @@ public class Main {
                 case 2 -> {
                     System.out.println("ID1:");
                     int id1 = sc.nextInt();
+                    
                     System.out.println("ID2:");
                     int id2 = sc.nextInt();
-                    System.out.println("Level (SPATNA/PRUMERNA/DOBRA):");
-                    CollaborationLevel level = CollaborationLevel.valueOf(sc.next());
+                    
+                    sc.nextLine();
+                    
+                    System.out.println("Level (spatna[1], prumerna[2], dobra[3]):");
+                    String vstup = sc.nextLine().toLowerCase();
 
-                    db.pridatSpolupraci(id1, id2, level);
+                    CollaborationLevel level;
+
+                    if (vstup.equals("1") || vstup.startsWith("spat")) {
+                        level = CollaborationLevel.SPATNA;
+                    } else if (vstup.equals("2") || vstup.startsWith("prum")) {
+                        level = CollaborationLevel.PRUMERNA;
+                    } else if (vstup.equals("3") || vstup.startsWith("dobr")) {
+                        level = CollaborationLevel.DOBRA;
+                    } else {
+                        System.out.println("Neplatná hodnota!");
+                        continue;
+                    }
+
+                    db.pridatSpolupraci(id1, id2, level, sc);
                 }
 
                 case 3 -> {
@@ -62,8 +90,24 @@ public class Main {
                 }
 
                 case 4 -> db.vypisZamestnance();
+                
                 case 5 -> db.statistiky();
+                
                 case 6 -> db.spustVypocet();
+                
+                case 7 -> {
+                    System.out.println("Zadej ID:");
+
+                    try {
+                        int id = Integer.parseInt(sc.nextLine());
+                        db.najdiZamestnance(id);
+                    } catch (Exception e) {
+                        System.out.println("Špatný vstup!");
+                    }
+                }
+                
+                case 8 -> db.vypisSpoluprace();
+                
                 case 0 -> System.exit(0);
             }
         }
