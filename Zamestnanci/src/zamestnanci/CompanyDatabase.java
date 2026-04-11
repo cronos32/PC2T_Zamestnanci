@@ -124,7 +124,7 @@ public class CompanyDatabase {
                 int id1 = e.getId();
                 int id2 = entry.getKey();
 
-                // 🔥 zajistí, že se nevypíše 2x (1-2 a 2-1)
+                //  zajistí, že se nevypíše 2x (1-2 a 2-1)
                 if (id1 < id2) {
                     Employee e2 = zamestnanci.get(id2);
 
