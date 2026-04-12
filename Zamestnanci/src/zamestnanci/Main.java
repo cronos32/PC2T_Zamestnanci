@@ -1,5 +1,6 @@
 package zamestnanci;
 
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -8,6 +9,8 @@ public class Main {
         CompanyDatabase db = new CompanyDatabase();
         Scanner sc = new Scanner(System.in);
 
+        db.nactiZeSouboru("data.txt");
+        
         while (true) {
             System.out.println("\n1 - Přidat zaměstnance");
             System.out.println("2 - Přidat spolupráci");
@@ -84,8 +87,9 @@ public class Main {
                 }
 
                 case 3 -> {
-                    System.out.println("ID:");
+                    System.out.println("Zadejte ID k odstranění:");
                     int id = sc.nextInt();
+                    sc.nextLine(); // Vyčištění bufferu
                     db.odebratZamestnance(id);
                 }
 
@@ -93,7 +97,35 @@ public class Main {
                 
                 case 5 -> db.statistiky();
                 
-                case 6 -> db.spustVypocet();
+                case 6 -> {
+                    System.out.println("\n=== VÝSLEDKY ANALÝZ A VÝPOČTŮ (Seřazeno podle skupin) ===");
+                    
+                    Map<Integer, Employee> mapa = db.getZamestnanci();
+
+                    if (mapa == null || mapa.isEmpty()) {
+                        System.out.println("V databázi nejsou žádní zaměstnanci.");
+                    } else {
+                        // 1. KOLO: Vypíšeme pouze Analytiky
+                        System.out.println("\n>>> DATOVÍ ANALYTICI");
+                        System.out.println("===================================");
+                        for (Employee e : mapa.values()) {
+                            if (e instanceof Analyst) {
+                                e.vypocet();
+                                System.out.println("-----------------------------------");
+                            }
+                        }
+
+                        // 2. KOLO: Vypíšeme pouze Security Specialisty
+                        System.out.println("\n>>> SECURITY SPECIALISTÉ");
+                        System.out.println("======(DOBRÁ = 1, PRŮMĚRNÁ = 2, ŠPATNÁ = 3) ======");
+                        for (Employee e : mapa.values()) {
+                            if (e instanceof SecuritySpecialist) {
+                                e.vypocet();
+                                System.out.println("-----------------------------------");
+                            }
+                        }
+                    }
+                }
                 
                 case 7 -> {
                     System.out.println("Zadej ID:");
@@ -108,7 +140,10 @@ public class Main {
                 
                 case 8 -> db.vypisSpoluprace();
                 
-                case 0 -> System.exit(0);
+                case 0 -> {
+                    db.ulozDoSouboru("data.txt");
+                    System.exit(0);
+                }
             }
         }
     }

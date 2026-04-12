@@ -32,6 +32,14 @@ public abstract class Employee {
 
     public String getPrijmeni() {
         return prijmeni;
+    }  
+    
+    public String getJmeno() {
+        return jmeno;
+    }
+
+    public int getRokNarozeni() {
+        return rokNarozeni;
     }
 
     public Map<Integer, CollaborationLevel> getSpoluprace() {
@@ -44,4 +52,5 @@ public abstract class Employee {
     public String toString() {
         return id + ": " + jmeno + " " + prijmeni + " (" + rokNarozeni + ")";
     }
+
 }

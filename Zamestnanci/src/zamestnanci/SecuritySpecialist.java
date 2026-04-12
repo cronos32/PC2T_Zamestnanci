@@ -2,22 +2,30 @@ package zamestnanci;
 
 public class SecuritySpecialist extends Employee {
 
-    public SecuritySpecialist(int id, String jmeno, String prijmeni, int rokNarozeni) {
-        super(id, jmeno, prijmeni, rokNarozeni);
+    public SecuritySpecialist(int id, String jmeno, String prijmeni, int rok) {
+        super(id, jmeno, prijmeni, rok);
     }
 
     @Override
     public void vypocet() {
-        int score = 0;
-
-        for (CollaborationLevel c : spoluprace.values()) {
-            switch (c) {
-                case SPATNA -> score += 3;
-                case PRUMERNA -> score += 2;
-                case DOBRA -> score += 1;
-            }
+        System.out.println("Security: " + jmeno + " " + prijmeni);
+        int pocet = spoluprace.size();
+        
+        if (pocet == 0) {
+            System.out.println("-> Rizikové skóre: 0.00 (žádné spolupráce)");
+            return;
         }
 
-        System.out.println("Rizikové skóre: " + score);
+        double sumaRizika = 0;
+        for (CollaborationLevel level : spoluprace.values()) {
+            sumaRizika += switch (level) {
+                case SPATNA -> 1.0;
+                case PRUMERNA -> 2.0;
+                case DOBRA -> 3.0;
+            };
+        }
+        
+        double skore = sumaRizika / pocet;
+        System.out.printf("-> Rizikové skóre: %.2f (průměrná rizikovost vazeb)%n", skore);
     }
 }
