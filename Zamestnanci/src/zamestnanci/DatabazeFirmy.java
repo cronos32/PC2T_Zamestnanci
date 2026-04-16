@@ -79,29 +79,29 @@ public class DatabazeFirmy {
     }
 
     public void vypisZamestnance() {
-        System.out.println("=== ANALYSTI ===");
-        List<Zamestnanec> analysti = zamestnanci.values().stream()
+        System.out.println("=== ANALYTICI ===");
+        List<Zamestnanec> analytici = zamestnanci.values().stream()
                 .filter(z -> z instanceof DatovyAnalytik)
-                .sorted(Comparator.comparing(Zamestnanec::getPrijmeni))
+                .sorted(Comparator.comparing(Zamestnanec::getPrijmeni, String.CASE_INSENSITIVE_ORDER))
                 .toList();
 
-        if (analysti.isEmpty()) {
+        if (analytici.isEmpty()) {
             System.out.println("V této skupině není žádný zaměstnanec.");
         } else {
-            analysti.forEach(z -> System.out.println(
+            analytici.forEach(z -> System.out.println(
                     "ID:" + z.getId() + " " + z.getPrijmeni() + " " + z.getJmeno() + " (" + z.getRokNarozeni() + ")"));
         }
 
-        System.out.println("\n=== SECURITY ===");
-        List<Zamestnanec> security = zamestnanci.values().stream()
+        System.out.println("\n=== BEZPECACI ===");
+        List<Zamestnanec> bezpecaci = zamestnanci.values().stream()
                 .filter(z -> z instanceof BezpecnostniSpecialista)
-                .sorted(Comparator.comparing(Zamestnanec::getPrijmeni))
+                .sorted(Comparator.comparing(Zamestnanec::getPrijmeni, String.CASE_INSENSITIVE_ORDER))
                 .toList();
 
-        if (security.isEmpty()) {
+        if (bezpecaci.isEmpty()) {
             System.out.println("V této skupině není žádný zaměstnanec.");
         } else {
-            security.forEach(z -> System.out.println(
+            bezpecaci.forEach(z -> System.out.println(
                     "ID:" + z.getId() + " " + z.getPrijmeni() + " " + z.getJmeno() + " (" + z.getRokNarozeni() + ")"));
         }
     }
