@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/admin/Documents/PC2T_zamestnanci_java/check.html -->
+<html lang="cs"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Checklist – Java projekt (Databázový systém zaměstnanců)</title>
+<style>
+    body { font-family: Arial; margin: 20px; }
+    h2 { margin-top: 30px; }
+    label { display: block; margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<h1>✅ Java projekt – Databázový systém zaměstnanců</h1>
+
+<div id="checklist">
+
+<h2>🧱 1. Návrh tříd (OOP základ)</h2>
+<label><input type="checkbox"> Vytvořená třída Employee (id, jméno, příjmení, rok narození)</label>
+<label><input type="checkbox"> ID je generované automaticky (např. static counter)</label>
+<label><input type="checkbox"> Třída má zapouzdření (private atributy + gettery/settery)</label>
+<label><input type="checkbox"> Seznam spolupracovníků (např. List&lt;Collaboration&gt;)</label>
+<label><input type="checkbox"> Vytvořená třída Collaboration (employeeId + kvalita)</label>
+<label><input type="checkbox"> Enum pro kvalitu spolupráce (SPATNA, PRUMERNA, DOBRA)</label>
+
+<h2>🧬 2. Dědičnost a polymorfismus</h2>
+<label><input type="checkbox"> Abstraktní třída Employee (nebo interface)</label>
+<label><input type="checkbox"> Třída DataAnalyst dědí z Employee</label>
+<label><input type="checkbox"> Třída SecuritySpecialist dědí z Employee</label>
+<label><input type="checkbox"> Abstraktní metoda např. performSkill()</label>
+<label><input type="checkbox"> Implementace performSkill() v obou třídách jinak</label>
+<label><input type="checkbox"> Použití polymorfismu (Employee reference na různé typy)</label>
+
+<h2>🧠 3. Specifická logika</h2>
+<label><input type="checkbox"> DataAnalyst: najde spolupracovníka s nejvíce společnými vazbami</label>
+<label><input type="checkbox"> Porovnávání seznamů spolupracovníků</label>
+
+<label><input type="checkbox"> SecuritySpecialist: výpočet rizikového skóre</label>
+<label><input type="checkbox"> Algoritmus používá počet spolupracovníků</label>
+<label><input type="checkbox"> Algoritmus používá kvalitu spolupráce (váhy)</label>
+
+<h2>📚 4. Datové struktury</h2>
+<label><input type="checkbox"> Použití ArrayList nebo jiné dynamické struktury</label>
+<label><input type="checkbox"> Seznam všech zaměstnanců (např. List&lt;Employee&gt;)</label>
+<label><input type="checkbox"> Vyhledávání zaměstnance podle ID</label>
+
+<h2>⚙️ 5. Funkcionalita (core)</h2>
+<label><input type="checkbox"> Přidání zaměstnance (výběr typu + vytvoření objektu)</label>
+<label><input type="checkbox"> Automatické přiřazení ID</label>
+
+<label><input type="checkbox"> Přidání spolupráce mezi dvěma zaměstnanci</label>
+<label><input type="checkbox"> Kontrola existence obou zaměstnanců</label>
+
+<label><input type="checkbox"> Odebrání zaměstnance</label>
+<label><input type="checkbox"> Odebrání všech vazeb na něj</label>
+
+<label><input type="checkbox"> Vyhledání zaměstnance podle ID</label>
+<label><input type="checkbox"> Výpis jeho dat</label>
+<label><input type="checkbox"> Výpis statistik spolupráce</label>
+
+<label><input type="checkbox"> Spuštění performSkill()</label>
+
+<label><input type="checkbox"> Abecední řazení podle příjmení</label>
+<label><input type="checkbox"> Výpis po skupinách</label>
+
+<h2>📊 6. Statistiky</h2>
+<label><input type="checkbox"> Výpočet nejčastější kvality spolupráce</label>
+<label><input type="checkbox"> Zaměstnanec s nejvíce spolupracovníky</label>
+<label><input type="checkbox"> Počet zaměstnanců v jednotlivých skupinách</label>
+
+<h2>💾 7. Soubory (File I/O)</h2>
+<label><input type="checkbox"> Uložení zaměstnance do souboru (např. JSON / TXT)</label>
+<label><input type="checkbox"> Načtení zaměstnance ze souboru</label>
+<label><input type="checkbox"> Ošetření chyb (try/catch)</label>
+
+<h2>🗄️ 8. SQL (záloha)</h2>
+<label><input type="checkbox"> Připojení k databázi (např. SQLite / MySQL)</label>
+<label><input type="checkbox"> Uložení všech zaměstnanců při ukončení</label>
+<label><input type="checkbox"> Načtení při startu</label>
+<label><input type="checkbox"> Program funguje i bez DB (fallback)</label>
+
+<h2>🧪 9. Kvalita kódu</h2>
+<label><input type="checkbox"> Použití balíčků (packages)</label>
+<label><input type="checkbox"> Rozdělení logiky (Service / Model)</label>
+<label><input type="checkbox"> Žádné duplikace kódu</label>
+<label><input type="checkbox"> Přehledné názvy metod</label>
+
+</div>
+
+<br>
+<button onclick="resetChecklist()">Reset</button>
+
+<script>
+const checkboxes = document.querySelectorAll("input[type=checkbox]");
+
+checkboxes.forEach((cb, index) => {
+    const saved = localStorage.getItem("java_check_" + index);
+    if (saved === "true") cb.checked = true;
+
+    cb.addEventListener("change", () => {
+        localStorage.setItem("java_check_" + index, cb.checked);
+    });
+});
+
+function resetChecklist() {
+    checkboxes.forEach((cb, index) => {
+        cb.checked = false;
+        localStorage.removeItem("java_check_" + index);
+    });
+}
+</script>
+
+
+</body></html>

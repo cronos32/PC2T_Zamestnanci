@@ -1,0 +1,3 @@
+16;haros;maros;1888;Analytik
+17;caros;karos;1606;BezpecnostniSpecialista
+S;16;17;DOBRA

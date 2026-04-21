@@ -9,8 +9,6 @@ public class Main {
         DatabazeFirmy db = new DatabazeFirmy();
         Scanner sc = new Scanner(System.in);
 
-        db.nactiZeSouboru();
-
         while (true) {
             System.out.println("\n1 - Přidat zaměstnance");
             System.out.println("2 - Přidat spolupráci");
@@ -21,6 +19,8 @@ public class Main {
             System.out.println("7 - Najít zaměstnance podle ID");
             System.out.println("8 - Vypsat spolupráce");
             System.out.println("9 - Počty ve skupinách");
+            System.out.println("10 - Načtení ze souboru");
+            System.out.println("11 - Uložení do souboru");
             System.out.println("0 - Konec");
 
             int volba;
@@ -149,8 +149,11 @@ public class Main {
 
                 case 9 -> db.vypisPoctyVeSkupinach();
 
+                case 10 -> db.nactiZeSouboru();
+
+                case 11 -> db.ulozDoSouboru();
+
                 case 0 -> {
-                    db.ulozDoSouboru();
                     System.out.println("Nashledanou!");
                     System.exit(0);
                 }
