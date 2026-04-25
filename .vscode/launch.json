@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "jdk",
+            "request": "launch",
+            "name": "Launch Java App",
+            "preLaunchTask": "Java: Compile",
+            //"mainClass": "zamestnanci.Main",
+            "vmArgs": "--enable-native-access=ALL-UNNAMED -cp \"${workspaceFolder}/Zamestnanci/bin;${workspaceFolder}/Zamestnanci/lib/sqlite-jdbc-3.51.1.0.jar\""
+        }
+    ]
+}

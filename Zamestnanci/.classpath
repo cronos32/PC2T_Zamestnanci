@@ -5,6 +5,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/admin/Documents/02-projekty/01-skolni_projekty/PC2T_zamestnanci_java/Zamestnanci/lib/sqlite-jdbc-3.51.1.0.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

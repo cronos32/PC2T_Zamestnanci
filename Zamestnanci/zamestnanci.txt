@@ -1,6 +1,0 @@
-2;Juk;pok;1478;Analyst
-4;los;most;9999;SecuritySpecialist
-5;lokte;zvokna;1566;SecuritySpecialist
-6;anfrej;boboes;2005;Analyst
-7;bobek;alois;1666;Analyst
-8;metju;luke;1665;SecuritySpecialist

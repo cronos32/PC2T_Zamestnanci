@@ -8,6 +8,11 @@ public class Main {
     public static void main(String[] args) {
         DatabazeFirmy db = new DatabazeFirmy();
         Scanner sc = new Scanner(System.in);
+        if (!db.connect("firma_db.db")) {
+            System.out.println("K databázi se nebylo možné připojit");
+            return;
+        }
+        db.nactiZeSQL();
 
         while (true) {
             System.out.println("\n1 - Přidat zaměstnance");
@@ -154,6 +159,8 @@ public class Main {
                 case 11 -> db.ulozDoSouboru();
 
                 case 0 -> {
+                    db.ulozDoSQL();
+                    db.disconnect();
                     System.out.println("Nashledanou!");
                     System.exit(0);
                 }

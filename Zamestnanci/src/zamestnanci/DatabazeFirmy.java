@@ -1,14 +1,38 @@
 package zamestnanci;
 
 import java.io.*;
+import java.sql.*;
 import java.util.*;
 
 public class DatabazeFirmy {
 
     private static final String SOUBOR = "data.txt";
 
+    private Connection conn;
     private Map<Integer, Zamestnanec> zamestnanci = new HashMap<>();
     private int dalsiId = 1;
+
+    public boolean connect(String dbName) {
+        conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + dbName);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public void disconnect() {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
     public Map<Integer, Zamestnanec> getZamestnanci() {
         return this.zamestnanci;
@@ -224,13 +248,11 @@ public class DatabazeFirmy {
     public void ulozDoSouboru() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(SOUBOR))) {
 
-            // Uložení zaměstnanců
             for (Zamestnanec z : zamestnanci.values()) {
                 String typ = (z instanceof DatovyAnalytik) ? "Analytik" : "BezpecnostniSpecialista";
                 pw.println(z.getId() + ";" + z.getJmeno() + ";" + z.getPrijmeni() + ";" + z.getRokNarozeni() + ";" + typ);
             }
 
-            // Uložení spolupráce (každá vazba jen jednou)
             for (Zamestnanec z : zamestnanci.values()) {
                 for (var entry : z.getSpoluprace().entrySet()) {
                     if (z.getId() < entry.getKey()) {
@@ -248,8 +270,7 @@ public class DatabazeFirmy {
 
     public void nactiZeSouboru() {
         try (BufferedReader br = new BufferedReader(new FileReader(SOUBOR))) {
-            zamestnanci.clear();
-            this.dalsiId = 1;
+            List<String[]> spoluprace = new ArrayList<>();
 
             String radek;
             while ((radek = br.readLine()) != null) {
@@ -258,16 +279,11 @@ public class DatabazeFirmy {
                 String[] casti = radek.split(";");
 
                 if (casti[0].equals("S")) {
-                    int id1 = Integer.parseInt(casti[1]);
-                    int id2 = Integer.parseInt(casti[2]);
-                    UrovenSpoluprace uroven = UrovenSpoluprace.valueOf(casti[3]);
-
-                    if (zamestnanci.containsKey(id1) && zamestnanci.containsKey(id2)) {
-                        zamestnanci.get(id1).pridejSpolupraci(id2, uroven);
-                        zamestnanci.get(id2).pridejSpolupraci(id1, uroven);
-                    }
+                    spoluprace.add(casti);
                 } else {
                     int id = Integer.parseInt(casti[0]);
+                    if (zamestnanci.containsKey(id)) continue;
+
                     String jmeno = casti[1];
                     String prijmeni = casti[2];
                     int rok = Integer.parseInt(casti[3]);
@@ -281,18 +297,141 @@ public class DatabazeFirmy {
                     } else {
                         z = new BezpecnostniSpecialista(id, jmeno, prijmeni, rok);
                     }
-
                     zamestnanci.put(id, z);
                 }
             }
 
-            System.out.println("Data byla úspěšně načtena ze souboru.");
-            System.out.println("Celkový počet načtených zaměstnanců: " + zamestnanci.size());
+            for (String[] casti : spoluprace) {
+                int id1 = Integer.parseInt(casti[1]);
+                int id2 = Integer.parseInt(casti[2]);
+                UrovenSpoluprace uroven = UrovenSpoluprace.valueOf(casti[3]);
+
+                if (zamestnanci.containsKey(id1) && zamestnanci.containsKey(id2)) {
+                    if (!zamestnanci.get(id1).getSpoluprace().containsKey(id2)) {
+                        zamestnanci.get(id1).pridejSpolupraci(id2, uroven);
+                        zamestnanci.get(id2).pridejSpolupraci(id1, uroven);
+                    }
+                }
+            }
+
+            System.out.println("Data úspěšně načtena a sloučena ze souboru.");
+            System.out.println("Celkový počet zaměstnanců v databázi: " + zamestnanci.size());
 
         } catch (FileNotFoundException e) {
             System.out.println("Soubor nenalezen, začínám s prázdnou databází.");
         } catch (Exception e) {
             System.out.println("Chyba při načítání souboru: " + e.getMessage());
+        }
+    }
+
+    public void nactiZeSQL() {
+        try {
+            vytvorTabulkyPokudNeExistuji();
+
+            zamestnanci.clear();
+            dalsiId = 1;
+
+            try (Statement st = conn.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT * FROM zamestnanci")) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String jmeno = rs.getString("jmeno");
+                    String prijmeni = rs.getString("prijmeni");
+                    int rok = rs.getInt("rok_narozeni");
+                    String typ = rs.getString("typ");
+
+                    if (id >= dalsiId) dalsiId = id + 1;
+
+                    Zamestnanec z;
+                    if (typ.equalsIgnoreCase("Analytik")) {
+                        z = new DatovyAnalytik(id, jmeno, prijmeni, rok, this.zamestnanci);
+                    } else {
+                        z = new BezpecnostniSpecialista(id, jmeno, prijmeni, rok);
+                    }
+                    zamestnanci.put(id, z);
+                }
+            }
+
+            try (Statement st = conn.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT * FROM spoluprace")) {
+                while (rs.next()) {
+                    int id1 = rs.getInt("id1");
+                    int id2 = rs.getInt("id2");
+                    UrovenSpoluprace uroven = UrovenSpoluprace.valueOf(rs.getString("uroven"));
+
+                    if (zamestnanci.containsKey(id1) && zamestnanci.containsKey(id2)) {
+                        zamestnanci.get(id1).pridejSpolupraci(id2, uroven);
+                        zamestnanci.get(id2).pridejSpolupraci(id1, uroven);
+                    }
+                }
+            }
+
+            System.out.println("Úspěšně načteno z SQL databáze. Počet zaměstnanců: " + zamestnanci.size());
+
+        } catch (Exception e) {
+            System.out.println("SQL databáze nenalezena nebo prázdná, začínám s prázdnou databází.");
+        }
+    }
+
+    public void ulozDoSQL() {
+        try {
+            vytvorTabulkyPokudNeExistuji();
+
+            try (Statement st = conn.createStatement()) {
+                st.executeUpdate("DELETE FROM spoluprace");
+                st.executeUpdate("DELETE FROM zamestnanci");
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO zamestnanci (id, jmeno, prijmeni, rok_narozeni, typ) VALUES (?, ?, ?, ?, ?)")) {
+                for (Zamestnanec z : zamestnanci.values()) {
+                    String typ = (z instanceof DatovyAnalytik) ? "Analytik" : "BezpecnostniSpecialista";
+                    ps.setInt(1, z.getId());
+                    ps.setString(2, z.getJmeno());
+                    ps.setString(3, z.getPrijmeni());
+                    ps.setInt(4, z.getRokNarozeni());
+                    ps.setString(5, typ);
+                    ps.executeUpdate();
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO spoluprace (id1, id2, uroven) VALUES (?, ?, ?)")) {
+                for (Zamestnanec z : zamestnanci.values()) {
+                    for (var entry : z.getSpoluprace().entrySet()) {
+                        if (z.getId() < entry.getKey()) {
+                            ps.setInt(1, z.getId());
+                            ps.setInt(2, entry.getKey());
+                            ps.setString(3, entry.getValue().name());
+                            ps.executeUpdate();
+                        }
+                    }
+                }
+            }
+
+            System.out.println("Úspěšně uloženo do SQL databáze. Počet zaměstnanců: " + zamestnanci.size());
+
+        } catch (Exception e) {
+            System.out.println("Chyba při ukládání do SQL: " + e.getMessage());
+        }
+    }
+
+    private void vytvorTabulkyPokudNeExistuji() throws SQLException {
+        try (Statement st = conn.createStatement()) {
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS zamestnanci (" +
+                "id INT PRIMARY KEY, " +
+                "jmeno VARCHAR(100) NOT NULL, " +
+                "prijmeni VARCHAR(100) NOT NULL, " +
+                "rok_narozeni INT NOT NULL, " +
+                "typ VARCHAR(50) NOT NULL)");
+
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS spoluprace (" +
+                "id1 INT NOT NULL, " +
+                "id2 INT NOT NULL, " +
+                "uroven VARCHAR(20) NOT NULL, " +
+                "PRIMARY KEY (id1, id2))");
         }
     }
 }

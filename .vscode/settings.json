@@ -1,0 +1,9 @@
+{
+    "java.project.referencedLibraries": [
+        "Zamestnanci/lib/**/*.jar"
+    ],
+    "terminal.integrated.env.windows": {
+        "JAVA_HOME": "c:\\Users\\admin\\Documents\\Java_SDK\\openJdk-25",
+        "PATH": "c:\\Users\\admin\\Documents\\Java_SDK\\openJdk-25\\bin;${env:PATH}"
+    }
+}
