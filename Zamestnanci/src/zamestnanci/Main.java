@@ -164,6 +164,10 @@ public class Main {
                     System.out.println("Nashledanou!");
                     System.exit(0);
                 }
+                default -> {
+                    System.out.println("Cením snahu je to číslo, ale příliš velké, zkus to znovu.");
+                }
+
             }
         }
     }
